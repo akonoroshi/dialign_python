@@ -8,7 +8,7 @@ This repository has the multi-party version of [dialign](https://github.com/Guil
 Our proposed measure extends the notion of shared expressions (Dubuisson Duplessis et al., 2021; Duplessis et al., 2017) to multi-party dialogues. We re-define *shared expressions* as "a surface text pattern inside an utterance that has been produced by **all** speakers, **regardless of to whom they spoke**. An expression can either be
 free or constrained, the same as Duplessis et al. (2017); an expression is *free* when it appears in an utterance without being a subexpression of a larger expression, whereas an expression is *constrained* if it appears in a turn as a subexpression of a larger expression (e.g., "two" in "two over three" in the table above). In our definition, a shared expression is *established* when it has been produced by all speakers and at least once in a free form.
 
-Duplessis et al. (2017( define the *initiator* of an expression as, "the interlocutor that first produced an instance of the expression." Similarly, we define the *establisher* as the last interlocutor that produced an instance of the expression, i.e., the interlocutor that established the shared expression in their turn. Note that the acts of initiation and establishment do not have any constraints on the number of turns.
+Duplessis et al. (2017) define the *initiator* of an expression as, "the interlocutor that first produced an instance of the expression." Similarly, we define the *establisher* as the last interlocutor that produced an instance of the expression, i.e., the interlocutor that established the shared expression in their turn. Note that the acts of initiation and establishment do not have any constraints on the number of turns.
 
 ### Metrics provided by dialign_python
 
