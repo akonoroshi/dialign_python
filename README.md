@@ -10,6 +10,8 @@ free or constrained, the same as Duplessis et al. (2017); an expression is *free
 
 Duplessis et al. (2017) define the *initiator* of an expression as, "the interlocutor that first produced an instance of the expression." Similarly, we define the *establisher* as the last interlocutor that produced an instance of the expression, i.e., the interlocutor that established the shared expression in their turn. Note that the acts of initiation and establishment do not have any constraints on the number of turns.
 
+`dialign_python` offers self-repetitions, too (Dubuisson Duplessis et al., 2021). "Self-repetitions are lexical patterns appearing at least twice in the dialogue utterances of a given \[speaker\], independently of the other \[speakers'\] utterances."
+
 ### Metrics provided by dialign_python
 
 
