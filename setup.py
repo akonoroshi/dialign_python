@@ -5,5 +5,5 @@ setup(
     packages=find_packages(),
     version='0.7.0',
     description='Python implementation of Dialign',
-    author='Paras Sharma, Ava Cai, Yuya Asano',
+    author='anonymous',
 )
