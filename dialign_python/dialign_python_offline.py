@@ -153,7 +153,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
 
     # Compute the self-repetitions
     for speaker, person in conversation.persons.items():
-        self_repetitions[speaker]["SEV"] = _get_ev(person.self_repetitions, speaker_dependent[speaker]["Total tokens"])
+        self_repetitions[speaker]["SEV"] = _get_ev(person.show_repetitions(), speaker_dependent[speaker]["Total tokens"])
         expression_lengths = [len(expression.split()) for expression in person.show_repetitions()]
         self_repetitions[speaker]["SENTR"] = _get_entr(person.show_repetitions())
         self_repetitions[speaker]["SL"] = float(np.mean(expression_lengths))
@@ -163,14 +163,14 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
 
 if __name__ == "__main__":
     # Example usage of the dialign function
-    input_file = "../../pilot_data/Deidentified-Transcripts/Dyad/with_receivers_base_time_annotated.xlsx"
+    input_file = "sample_offline_input.csv"
     speaker_col = "Speaker"
-    message_col = "Modified (English)"
-    timestamp_col = "Start Time"
-    valid_speakers = ["Emma", "1_a", "1_b"]
-    sheet_name = "1ab"
-    filters = {"On-Task/Off-Task": ["on-task"], 'Receiver': valid_speakers}
-    speaker_independent, speaker_dependent, shared_expressions, self_repetitions, online_metrics = dialign(input_file, speaker_col, message_col, timestamp_col, valid_speakers, sheet_name, filters)
+    message_col = "Utterance"
+    timestamp_col = "Timestamp"
+    valid_speakers = ["Emma", "Student A", "Student B"]
+    filters = {'Receiver': valid_speakers}
+    time_format="%H:%M:%S.%f"
+    speaker_independent, speaker_dependent, shared_expressions, self_repetitions, online_metrics = dialign(input_file, speaker_col, message_col, timestamp_col, valid_speakers, filters=filters, time_format=time_format)
     print(f"Speaker independent: {speaker_independent}")
     print("Speaker dependent:")
     for speaker, data in speaker_dependent.items():

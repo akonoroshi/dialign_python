@@ -1,0 +1,11 @@
+﻿Timestamp,Speaker,Utterance,End Timestamp,Receiver
+00:00:00.000000,Emma,"So now we know how much paint and food to get at the store. But, before I go to the store, can you help me figure out how much of my battery I will use over time?",00:00:09.400000,Student A
+00:00:24.600000,Student B,"Um so if we think about it in terms of minutes, the first one would be forty minutes and then sixty minutes and then one eighty. But I don't know what ratio that would be.",00:00:38.500000,Student A
+00:00:44.500000,Student A,"I mean she's kind of a calculator we could always, I'd ask her to see what the ratio, yeah, like to simplify it.",00:00:53.000000,Student B
+00:00:53.100000,Student B,Yeah.,00:00:53.200000,Student A
+00:00:58.400000,Student A,Should we say divide one hundred and twenty by two?,00:01:00.700000,Student B
+00:01:03.400000,Student B,"Do you think she can do that? I mean it doesn't hurt to try. Yeah, we can.",00:01:07.200000,Student A
+00:01:14.300000,Student A,"So Emma, first, you're gonna try to see how much battery usage goes into time by dividing one over twenty by two over three in step zero.",00:01:26.400000,Emma
+00:01:30.800000,Emma,I think I understand what you're saying. So we have two over three because we have two thirds of an hour for one twentieth of the battery. Student A. Do we multiply it by something?,00:01:39.300000,Student B
+00:02:00.800000,Student B,"Okay. So Emma, first, you're going to take the battery usage, which is one over twenty and divide that by the time, which is two over three. So you're gonna do one over twenty divided by two over three.",00:02:14.300000,Emma
+00:02:17.500000,Emma,I get it. So we're trying to figure out what times two thirds of an hour will give us one hour. But then I'm not sure what to do.,00:02:24.300000,Student A
