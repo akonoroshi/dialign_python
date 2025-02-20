@@ -1,48 +1,7 @@
 import time
 from datetime import datetime, timedelta
 from Parallel_score import score_utterances_in_parallel
-
-
-class Person:
-    def __init__(self, name):
-        """
-        Initializes a person in the conversation
-
-        Args:
-            name (_type_): _description_
-        """
-        self.name = name
-        self.repetitions = []  # Store personal repetitions
-
-    def add_repetition(self, n_gram):
-        """
-        Add a n_gram that is repeated within Person's conversation history (contributing to DSER score)
-
-        Args:
-            n_gram (_type_): _description_
-        """
-        self.repetitions.append(n_gram)
-
-    def remove_repetition(self, n_gram):
-        """
-        removes an n_gram from the Person's expression library
-
-        Args:
-            n_gram (_type_): _description_
-        """
-        self.repetitions.remove(n_gram)
-    def show_repetitions(self):
-        """
-        Show all repetitions of Person
-
-        Returns:
-            _type_: _description_
-        """
-        return self.repetitions
-    
-    def print_repetitions(self):
-        print (f'{self.name}: {self.repetitions}')
-
+from person import Person
 
 class Conversation:
     def __init__(self, history=None, length=None, window=None, persons=None, exception_tokens=None, min_ngram=None, max_ngram=None, suppress_debug=False):
