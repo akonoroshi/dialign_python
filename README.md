@@ -14,7 +14,7 @@ Duplessis et al. (2017) define the *initiator* of an expression as, "the interlo
 
 ### Metrics provided by `dialign_python`
 The following explanations are taken from [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021), Asano et al. (2022) Anonymous (2025)
-`dialign` provides a set of measures to characterise both:
+`dialign_python` provides a set of measures to characterise both:
 1. the interactive verbal alignment process between dialogue participants, and
 2. the self-repetition behaviour of each participant.
 
