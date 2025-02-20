@@ -47,12 +47,12 @@ class Conversation:
         # output file
         self.output_file = "conversation_output.txt"
 
-    def parallel_score(self, utterances, speaker, scoring_condition):
+    def parallel_score(self, utterances, speaker, add_message_to_history):
         """
         parallel scoring to the external module.
         """
         try:
-            results = score_utterances_in_parallel(self, utterances, speaker, scoring_condition)
+            results = score_utterances_in_parallel(self, utterances, speaker, add_message_to_history)
         except Exception as e:
             print(f"Error in parallel scoring: {e}")
             results = None
@@ -86,7 +86,7 @@ class Conversation:
                 self.history = [(time, speaker, message) for time, speaker, message in self.history if datetime.strptime(timestamp, self.time_format) - datetime.strptime(time, self.time_format) <= self.window]
         self.length = len(self.history)
 
-    def score_message(self, speaker, message, timestamp=None, add_message_to_history=True, focus_conversation=None): 
+    def score_message(self, speaker, message, timestamp=None, add_message_to_history=True, focus_conversation=None):
         """
         Function for scoring a message in relation to the conversation.
 
@@ -663,7 +663,7 @@ class Conversation:
             else:
                 print("No results from parallel scoring.")
         elif mode == 'p':
-            results = self.parallel_score(utterances_to_score, "BatchSpeaker", 0)
+            results = self.parallel_score(utterances_to_score, "BatchSpeaker", False)
             if results:
                 print("\nParallel Scoring Results:")
                 for utterance, scores in results:

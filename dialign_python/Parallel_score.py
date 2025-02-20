@@ -10,10 +10,10 @@ def scoring_task(args):
 
 
     """
-    conversation, utterance, speaker, scoring_condition = args
+    conversation, utterance, speaker, add_message_to_history = args
     try:
         # Call score_message
-        scores = conversation.score_message(speaker, utterance, scoring_condition)
+        scores = conversation.score_message(speaker, utterance, add_message_to_history)
         if isinstance(scores, tuple) and len(scores) == 3:
             der_score, dser_score, dee = scores
             return (utterance, {"DER": der_score, "DSER": dser_score, "DEE": dee})
@@ -25,7 +25,7 @@ def scoring_task(args):
 
 
 
-def score_utterances_in_parallel(conversation, utterances, speaker, scoring_condition):
+def score_utterances_in_parallel(conversation, utterances, speaker, add_message_to_history):
     """
     Perform parallel scoring on a list of utterances.
 
@@ -36,11 +36,11 @@ def score_utterances_in_parallel(conversation, utterances, speaker, scoring_cond
     try:
         print(f"Starting parallel scoring for {len(utterances)} utterances.")
         if speaker not in conversation.persons:
-            from dialign_python import Person
+            from person import Person
             conversation.persons[speaker] = Person(speaker)
 
 
-        args = [(conversation, utterance, speaker, scoring_condition) for utterance in utterances]
+        args = [(conversation, utterance, speaker, add_message_to_history) for utterance in utterances]
 
         with Pool(processes=4) as pool:
             results = pool.map(scoring_task, args)

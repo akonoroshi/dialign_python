@@ -70,11 +70,12 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         tokenizer (function, optional): Tokenizer function to use for the analysis. It must take a string to tokenize as the only argument and return a list of tokens. Defaults to tokenize in utils.py.
 
     Returns:
-        speaker_independent (dict): Dictionary containing the speaker-independent scores (EV, ER, ENTR, L, LMAX, SER, EE, Total tokens, Num. shared expressions) for the conversation.
-        speaker_dependent (dict): Dictionary containing the speaker-dependent scores (ER, EE, Total tokens, Initiated, Established) for each speaker for the conversation.
-        shared_expressions (dict): Dictionary containing the shared expressions. Keys are shared expressions, and values are dictionaries containing the initiator, establisher, establishment turn, and turns in which the expression appeared.
-        self_repetitions (dict): Dictionary containing the self-repetition scores (SEV, SER, SENTR, SL, SLMAX) for each speaker for the conversation.
-        online_metrics (list): List of dictionaries containing the online metrics for each message in the conversation.
+        tuple: A tuple containing the following elements:
+            - speaker_independent (dict): Dictionary containing the speaker-independent scores (EV, ER, ENTR, L, LMAX, SER, EE, Total tokens, Num. shared expressions) for the conversation.
+            - speaker_dependent (dict): Dictionary containing the speaker-dependent scores (ER, EE, Total tokens, Initiated, Established) for each speaker for the conversation.
+            - shared_expressions (dict): Dictionary containing the shared expressions. Keys are shared expressions, and values are dictionaries containing the initiator, establisher, establishment turn, and turns in which the expression appeared.
+            - self_repetitions (dict): Dictionary containing the self-repetition scores (SEV, SER, SENTR, SL, SLMAX) for each speaker for the conversation.
+            - online_metrics (list): List of dictionaries containing the online metrics for each message in the conversation.
     """
 
     if tokenizer is None:
