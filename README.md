@@ -90,7 +90,7 @@ After cloning this repo, go to the top directory of the repo and run the followi
 ```
 python -m pip install .
 ```
-If you do not have your own tokenizer (i.e., you want to use [our default tokenizer](https://github.com/akonoroshi/dialign_python/blob/47af424ee43ad580d01c2d1e5a28e3575954ac6b/dialign_python/utils.py#L6)), run the following command:
+If you do not have your own tokenizer (i.e., you want to use [our default tokenizer](https://github.com/akonoroshi/dialign_python/blob/47af424ee43ad580d01c2d1e5a28e3575954ac6b/dialign_python/utils.py#L6)), run the following command, too:
 ```
 python -m spacy download en_core_web_sm
 ```
@@ -99,7 +99,19 @@ python -m spacy download en_core_web_sm
 There are two modes: offline and online. The offline mode is designed for the analysis of completed dialogues (in other words, you should have transcripts of finished dialogues). The online mode is designed for ongoing dialogues. The online mode can score new utterances using the dialogue history and update the history in real-time.
 
 ### Offline mode
+```python
+from dialign_python.dialign_python_offline import dialign
 
+input_file = "sample_offline_input.csv"
+speaker_col = "Speaker"
+message_col = "Utterance"
+timestamp_col = "Timestamp"
+valid_speakers = ["Emma", "Student A", "Student B"]
+filters = {'Receiver': valid_speakers}
+time_format="%H:%M:%S.%f"
+
+speaker_independent, speaker_dependent, shared_expressions, self_repetitions, online_metrics = dialign(input_file, speaker_col, message_col, timestamp_col, valid_speakers, filters=filters, time_format=time_format)
+```
 
 ### Online mode
 
