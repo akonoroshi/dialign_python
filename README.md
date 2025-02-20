@@ -13,7 +13,7 @@ Duplessis et al. (2017) define the *initiator* of an expression as, "the interlo
 `dialign_python` offers self-repetitions, too (Dubuisson Duplessis et al., 2021). "Self-repetitions are lexical patterns appearing at least twice in the dialogue utterances of a given \[speaker\], independently of the other \[speakers'\] utterances."
 
 ### Metrics provided by `dialign_python`
-The following explanations are taken from [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021), Asano et al. (2022) Anonymous (2025)
+The following explanations are taken from [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021), Asano et al. (2022) Anonymous (2025).
 `dialign_python` provides a set of measures to characterise both:
 1. the interactive verbal alignment process between dialogue participants, and
 2. the self-repetition behaviour of each participant.
