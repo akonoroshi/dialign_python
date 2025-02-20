@@ -1,14 +1,10 @@
-import re
 from collections import Counter
 import pprint
 import pandas as pd
 import numpy as np
-import spacy
 from scipy.stats import entropy
 from person import Person
 from conversation import Conversation
-
-nlp = spacy.load("en_core_web_sm")
 
 def read_transcript(input_file: str, speaker_col: str, message_col: str, sheet_name=None, valid_speakers=None, filters=None):
     """
@@ -54,7 +50,7 @@ def _get_entr(expressions: list):
     probabilities = np.array(counts) / len(expression_lengths)
     return float(entropy(probabilities))
 
-def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=None, valid_speakers=None, sheet_name=None, filters=None, window=None, exception_tokens=None, min_ngram=1, max_ngram=None, time_format="%Y-%m-%d %H:%M:%S"):
+def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=None, valid_speakers=None, sheet_name=None, filters=None, window=None, exception_tokens=None, min_ngram=1, max_ngram=None, time_format="%Y-%m-%d %H:%M:%S", tokenizer=None):
     """
     Function to run the Dialign algorithm on a conversation dataset.
 
@@ -71,6 +67,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         min_ngram (int, optional): Minimum n-gram length for the analysis. Defaults to 1.
         max_ngram (int, optional): Maximum n-gram length for the analysis. Defaults to None.
         time_format (str, optional): format of the timestamp. Defaults to "%Y-%m-%d %H:%M:%S".
+        tokenizer (function, optional): Tokenizer function to use for the analysis. It must take a string to tokenize as the only argument and return a list of tokens. Defaults to tokenize in utils.py.
 
     Returns:
         speaker_independent (dict): Dictionary containing the speaker-independent scores (EV, ER, ENTR, L, LMAX, SER, EE, Total tokens, Num. shared expressions) for the conversation.
@@ -79,6 +76,10 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         self_repetitions (dict): Dictionary containing the self-repetition scores (SEV, SER, SENTR, SL, SLMAX) for each speaker for the conversation.
         online_metrics (list): List of dictionaries containing the online metrics for each message in the conversation.
     """
+
+    if tokenizer is None:
+        from utils import tokenize
+        tokenizer = tokenize
 
     df = read_transcript(input_file, speaker_col, message_col, sheet_name, valid_speakers, filters)
 
@@ -98,8 +99,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
     online_metrics = []
     for _, row in df.iterrows():
         speaker = row[speaker_col]
-        doc = nlp(re.sub(r'\[.*\]', '', row[message_col]).replace('_', ''))
-        tokens = [token.text for token in doc]
+        tokens = tokenizer(row[message_col])
         message = ' '.join(tokens).lower()
         if timestamp_col is not None:
             timestamp = row[timestamp_col]
