@@ -104,9 +104,9 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         message = ' '.join(tokens).lower()
         if timestamp_col is not None:
             timestamp = row[timestamp_col]
-            der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, timestamp, add_message_to_history=True)
+            der, dser, dee, established_expression, repeated_expression, self_repetition = conversation.score_message(speaker, message, timestamp, add_message_to_history=True)
         else:
-            der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, add_message_to_history=True)
+            der, dser, dee, established_expression, repeated_expression, self_repetition = conversation.score_message(speaker, message, add_message_to_history=True)
         speaker_dependent[speaker]["ER"] += round(der * len(tokens))
         self_repetitions[speaker]["SER"] += round(dser * len(tokens))
         speaker_dependent[speaker]["EE"] += round(dee * len(tokens))
@@ -115,7 +115,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         self_repetition_num += round(dser * len(tokens))
         establishment_num += round(dee * len(tokens))
         total_tokens += len(tokens)
-        online_metrics.append({'Speaker': speaker, 'Message': message, 'DER': der, 'DSER': dser, 'DEE': dee, 'Established Expression': established_expression, 'Repeated Expression': repeated_expression})
+        online_metrics.append({'Speaker': speaker, 'Message': message, 'DER': der, 'DSER': dser, 'DEE': dee, 'Established Expression': established_expression, 'Repeated Expression': repeated_expression, 'Self Repetition': self_repetition})
     
     # Compute the final speaker-dependent scores
     for speaker in valid_speakers:

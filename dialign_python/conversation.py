@@ -110,7 +110,7 @@ class Conversation:
         if focus_conversation is not None:
             for person in focus_conversation:
                 if person not in self.persons:
-                    return 0, 0, 0, [], []
+                    return 0, 0, 0, [], [], []
             der, dser, dee = self.sub_conversation(focus_conversation, speaker, message)
         else:
             if self.length == 0:
@@ -129,7 +129,7 @@ class Conversation:
         else:
             self.add_message(speaker, message, timestamp)
             
-        return der, dser, dee, established_expressions, repeated_expressions
+        return der, dser, dee, established_expressions, repeated_expressions, personal_repetitions
 
 
     def score_sub_conversation(self, speaker, message, scoring_condition, focus_conversation=None):
@@ -232,8 +232,8 @@ class Conversation:
             if speaker == current_speaker:
                 matching_n_grams = self.compare(past_message, n_gram_set)
                 repetitions = set(self.persons[current_speaker].repetitions)
-                for n_gram in matching_n_grams.keys():
-                    if n_gram not in repetitions:
+                for n_gram, free_form in matching_n_grams.items():
+                    if n_gram not in repetitions and n_gram not in punctuations and free_form:
                         individual_repetitions.append(n_gram)
                         self.persons[current_speaker].add_repetition(n_gram)
             else:
@@ -608,9 +608,9 @@ class Conversation:
                     return 0,0,0
                 
                 if focus_conversation is None:
-                    der, dser, dee, _, _ = self.score_message(speaker, message, add_message_to_history=add_message_to_history)
+                    der, dser, dee, _, _, _ = self.score_message(speaker, message, add_message_to_history=add_message_to_history)
                 else:
-                    der, dser, dee, _, _ = self.score_message(speaker, message, focus_conversation=focus_conversation, add_message_to_history=add_message_to_history)
+                    der, dser, dee, _, _, _ = self.score_message(speaker, message, focus_conversation=focus_conversation, add_message_to_history=add_message_to_history)
                 print (f'Shared Expressions : {self.shared_expressions}')
                 print (f'DER: {der}')
                 print (f'DSER: {dser}')

@@ -14,8 +14,8 @@ def scoring_task(args):
     try:
         # Call score_message
         scores = conversation.score_message(speaker, utterance, add_message_to_history)
-        if isinstance(scores, tuple) and len(scores) == 3:
-            der_score, dser_score, dee = scores
+        if isinstance(scores, tuple) and len(scores) == 6:
+            der_score, dser_score, dee, _, _, _ = scores
             return (utterance, {"DER": der_score, "DSER": dser_score, "DEE": dee})
         else:
             return (utterance, {"DER": None, "DSER": None, "DEE": None})
