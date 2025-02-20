@@ -63,7 +63,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         suppress_debug (bool, optional): Flag to suppress debug output. Defaults to False.
 
     Returns:
-        speaker_independent (dict): Dictionary containing the speaker-independent scores (ER, SER, EE, Total tokens, Num. shared expressions) for the conversation.
+        speaker_independent (dict): Dictionary containing the speaker-independent scores (EV, ER, ENTR, L, LMAX, SER, EE, Total tokens, Num. shared expressions) for the conversation.
         speaker_dependent (dict): Dictionary containing the speaker-dependent scores (ER, SER, EE, Total tokens, Initiated, Established) for each `valud_speaker` for the conversation.
     """
 
@@ -90,9 +90,9 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         message = ' '.join(tokens).lower()
         if timestamp_col is not None:
             timestamp = row[timestamp_col]
-            der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, timestamp, add_message=True)
+            der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, timestamp, add_message_to_history=True)
         else:
-            der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, add_message=True)
+            der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, add_message_to_history=True)
         speaker_dependent[speaker]["ER"] += round(der * len(tokens))
         speaker_dependent[speaker]["SER"] += round(dser * len(tokens))
         speaker_dependent[speaker]["EE"] += round(dee * len(tokens))
