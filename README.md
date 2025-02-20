@@ -49,7 +49,7 @@ orientation. In a nutshell:
 | ENTR    | Shannon entropy of the lengths in token of the shared expression instances. | Complexity |
 | L       | Average length in token of the shared expression instances. | Stability |
 | LMAX    | Maximum length in token of the shared expression instances. | Stability |
-| EE      | Expression Establishmen (EE). The proportion of tokens which speakers dedicate to the establishment of a shared expression. | Activeness |
+| EE      | Expression Establishment (EE). The proportion of tokens which speakers dedicate to the establishment of a shared expression. | Activeness |
 
 #### Speaker-dependent
 
