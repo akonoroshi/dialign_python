@@ -5,7 +5,7 @@ from person import Person
 from Parallel_score import score_utterances_in_parallel
 
 class Conversation:
-    def __init__(self, history=None, window=None, persons=None, exception_tokens=None, min_ngram=1, max_ngram=None, suppress_debug=False):
+    def __init__(self, history=None, window=None, persons=None, exception_tokens=None, min_ngram=1, max_ngram=None, time_format="%Y-%m-%d %H:%M:%S"):
         """
         Initializes a conversation instance. min_ngram and max_ngram are constraints on the length of n_grams to check for. 
 
@@ -16,6 +16,7 @@ class Conversation:
             exception_tokens (list, optional): an array of strings not to include in calculation. Defaults to an empty list.
             min_ngram (int, optional): constraints on the length of n_grams to check for. Defaults to 1.
             max_ngram (_type_, optional): constraints on the length of n_grams to check for. Defaults to None.
+            time_format (str, optional): format of the timestamp. Defaults to "%Y-%m-%d %H:%M:%S".
         """
         if history is None:
             history = []
@@ -37,6 +38,8 @@ class Conversation:
         # definitions for n_gram lengths, needed for potential optimization of n_gram calculation
         self.min_ngram = min_ngram
         self.max_ngram = max_ngram
+
+        self.time_format = time_format
         
         # Shared expressions. The key is a expression and the value is a dictionary of the speakers who initiated the expression (initiator) and established the expression (establisher).
         self.shared_expressions = {}
@@ -44,20 +47,15 @@ class Conversation:
         # output file
         self.output_file = "conversation_output.txt"
 
-        self.suppress_debug = suppress_debug  # Debug suppression flag
-
     def parallel_score(self, utterances, speaker, scoring_condition):
         """
         parallel scoring to the external module.
         """
-        previous_debug_state = self.suppress_debug
-        # Suppress debug during parallel scoring
-        self.suppress_debug = True
         try:
             results = score_utterances_in_parallel(self, utterances, speaker, scoring_condition)
-        finally:
-            # Restore previous state
-            self.suppress_debug = previous_debug_state 
+        except Exception as e:
+            print(f"Error in parallel scoring: {e}")
+            results = None
         return results
     
     def add_message(self, speaker, message, timestamp=None):
@@ -76,7 +74,7 @@ class Conversation:
         if timestamp is None:
             if isinstance(self.window, timedelta):
                 raise ValueError("Timestamp is required for time-based window.")
-            timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+            timestamp = time.strftime(self.time_format)
         
         # Add the message to the conversation history and remove messages outside the window
         self.history.append((timestamp, speaker, message))
@@ -85,8 +83,7 @@ class Conversation:
                 if len(self.history) > self.window:
                     self.history.pop(0)
             elif isinstance(self.window, timedelta):
-                time_format = "%H:%M:%S.%f"
-                self.history = [(time, speaker, message) for time, speaker, message in self.history if datetime.strptime(timestamp, time_format) - datetime.strptime(time, time_format) <= self.window]
+                self.history = [(time, speaker, message) for time, speaker, message in self.history if datetime.strptime(timestamp, self.time_format) - datetime.strptime(time, self.time_format) <= self.window]
         self.length = len(self.history)
 
     def score_message(self, speaker, message, timestamp=None, add_message_to_history=True, focus_conversation=None): 
@@ -553,9 +550,6 @@ class Conversation:
                     self.analyze_message(speaker, message, sub_window)
                 sub_window.append((timestamp, speaker, message))
                 count += 1
-
-        if not self.suppress_debug:  # Check debug suppression flag
-            print(self.shared_expressions)
 
     def load_conversation_from_file(self, input_file):
         """

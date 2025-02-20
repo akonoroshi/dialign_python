@@ -44,7 +44,17 @@ def read_transcript(input_file: str, speaker_col: str, message_col: str, sheet_n
             df = df[df[col].isin(vals)]
     return df.dropna(subset=[speaker_col]).reset_index(drop=True)
 
-def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=None, valid_speakers=None, sheet_name=None, filters=None, window=None, exception_tokens=None, min_ngram=1, max_ngram=None, suppress_debug=False):
+def _get_ev(expressions: list, total_tokens: int):
+    return len(expressions) / total_tokens
+
+def _get_entr(expressions: list):
+    expression_lengths = [len(expression.split()) for expression in expressions]
+    counter = Counter(expression_lengths)
+    _, counts = zip(*counter.items())
+    probabilities = np.array(counts) / len(expression_lengths)
+    return float(entropy(probabilities))
+
+def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=None, valid_speakers=None, sheet_name=None, filters=None, window=None, exception_tokens=None, min_ngram=1, max_ngram=None, time_format="%Y-%m-%d %H:%M:%S"):
     """
     Function to run the Dialign algorithm on a conversation dataset.
 
@@ -60,28 +70,31 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         exception_tokens (list, optional): List of tokens to exclude from the analysis. Defaults to None.
         min_ngram (int, optional): Minimum n-gram length for the analysis. Defaults to 1.
         max_ngram (int, optional): Maximum n-gram length for the analysis. Defaults to None.
-        suppress_debug (bool, optional): Flag to suppress debug output. Defaults to False.
+        time_format (str, optional): format of the timestamp. Defaults to "%Y-%m-%d %H:%M:%S".
 
     Returns:
         speaker_independent (dict): Dictionary containing the speaker-independent scores (EV, ER, ENTR, L, LMAX, SER, EE, Total tokens, Num. shared expressions) for the conversation.
-        speaker_dependent (dict): Dictionary containing the speaker-dependent scores (ER, SER, EE, Total tokens, Initiated, Established) for each `valud_speaker` for the conversation.
+        speaker_dependent (dict): Dictionary containing the speaker-dependent scores (ER, EE, Total tokens, Initiated, Established) for each speaker for the conversation.
+        shared_expressions (dict): Dictionary containing the shared expressions. Keys are shared expressions, and values are dictionaries containing the initiator, establisher, establishment turn, and turns in which the expression appeared.
+        self_repetitions (dict): Dictionary containing the self-repetition scores (SEV, SER, SENTR, SL, SLMAX) for each speaker for the conversation.
+        online_metrics (list): List of dictionaries containing the online metrics for each message in the conversation.
     """
 
     df = read_transcript(input_file, speaker_col, message_col, sheet_name, valid_speakers, filters)
 
     # Initialize the conversation instance
-    if valid_speakers is not None:
-        persons = {speaker: Person(speaker) for speaker in valid_speakers}
-    else:
-        persons = {speaker: Person(speaker) for speaker in df[speaker_col].unique()}
-    conversation = Conversation(persons=persons, window=window, exception_tokens=exception_tokens, min_ngram=min_ngram, max_ngram=max_ngram, suppress_debug=suppress_debug)
+    if valid_speakers is None:
+        valid_speakers = df[speaker_col].unique()
+    persons = {speaker: Person(speaker) for speaker in valid_speakers}
+    conversation = Conversation(persons=persons, window=window, exception_tokens=exception_tokens, min_ngram=min_ngram, max_ngram=max_ngram, time_format=time_format)
 
     # Iterate through each row in the conversation data
     repetition_num = 0
     self_repetition_num = 0
     establishment_num = 0
     total_tokens = 0
-    speaker_dependent = {speaker: {"ER": 0, "SER": 0, "EE": 0, "Total tokens": 0, "Initiated": 0, "Established": 0} for speaker in valid_speakers}
+    speaker_dependent = {speaker: {"ER": 0, "EE": 0, "Total tokens": 0, "Initiated": 0, "Established": 0} for speaker in valid_speakers}
+    self_repetitions = {speaker: {"SER": 0} for speaker in valid_speakers}
     online_metrics = []
     for _, row in df.iterrows():
         speaker = row[speaker_col]
@@ -94,7 +107,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         else:
             der, dser, dee, established_expression, repeated_expression = conversation.score_message(speaker, message, add_message_to_history=True)
         speaker_dependent[speaker]["ER"] += round(der * len(tokens))
-        speaker_dependent[speaker]["SER"] += round(dser * len(tokens))
+        self_repetitions[speaker]["SER"] += round(dser * len(tokens))
         speaker_dependent[speaker]["EE"] += round(dee * len(tokens))
         speaker_dependent[speaker]["Total tokens"] += len(tokens)
         repetition_num += round(der * len(tokens))
@@ -107,11 +120,11 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
     for speaker in valid_speakers:
         if speaker_dependent[speaker]["Total tokens"] > 0:
             speaker_dependent[speaker]["ER"] /= speaker_dependent[speaker]["Total tokens"]
-            speaker_dependent[speaker]["SER"] /= speaker_dependent[speaker]["Total tokens"]
+            self_repetitions[speaker]["SER"] /= speaker_dependent[speaker]["Total tokens"]
             speaker_dependent[speaker]["EE"] /= speaker_dependent[speaker]["Total tokens"]
         else:
             speaker_dependent[speaker]["ER"] = 0
-            speaker_dependent[speaker]["SER"] = 0
+            self_repetitions[speaker]["SER"] = 0
             speaker_dependent[speaker]["EE"] = 0
     for data in conversation.shared_expressions.values():
         speaker_dependent[data['initiator']]["Initiated"] += 1 / len(conversation.shared_expressions)
@@ -132,15 +145,19 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         }
     speaker_independent["Total tokens"] = total_tokens
     speaker_independent["Num. shared expressions"] = len(conversation.shared_expressions)
-    speaker_independent['EV'] = len(conversation.shared_expressions) / total_tokens
+    speaker_independent['EV'] = _get_ev(conversation.shared_expressions.keys(), total_tokens)
     expression_lengths = [len(expression.split()) for expression in conversation.shared_expressions]
-    counter = Counter(expression_lengths)
-    _, counts = zip(*counter.items())
-    probabilities = np.array(counts) / len(expression_lengths)
-    speaker_independent['ENTR'] = float(entropy(probabilities))
+    speaker_independent['ENTR'] = _get_entr(conversation.shared_expressions.keys())
     speaker_independent['L'] = float(np.mean(expression_lengths))
     speaker_independent['LMAX'] = int(np.max(expression_lengths))
-    self_repetitions = {speaker: person.show_repetitions() for speaker, person in conversation.persons.items()}
+
+    # Compute the self-repetitions
+    for speaker, person in conversation.persons.items():
+        self_repetitions[speaker]["SEV"] = _get_ev(person.self_repetitions, speaker_dependent[speaker]["Total tokens"])
+        expression_lengths = [len(expression.split()) for expression in person.show_repetitions()]
+        self_repetitions[speaker]["SENTR"] = _get_entr(person.show_repetitions())
+        self_repetitions[speaker]["SL"] = float(np.mean(expression_lengths))
+        self_repetitions[speaker]["SLMAX"] = int(np.max(expression_lengths))
         
     return speaker_independent, speaker_dependent, conversation.shared_expressions, self_repetitions, online_metrics
 
@@ -153,7 +170,7 @@ if __name__ == "__main__":
     valid_speakers = ["Emma", "1_a", "1_b"]
     sheet_name = "1ab"
     filters = {"On-Task/Off-Task": ["on-task"], 'Receiver': valid_speakers}
-    speaker_independent, speaker_dependent, shared_expressions, self_repetitions, online_metrics = dialign(input_file, speaker_col, message_col, timestamp_col, valid_speakers, sheet_name, filters, suppress_debug=True)
+    speaker_independent, speaker_dependent, shared_expressions, self_repetitions, online_metrics = dialign(input_file, speaker_col, message_col, timestamp_col, valid_speakers, sheet_name, filters)
     print(f"Speaker independent: {speaker_independent}")
     print("Speaker dependent:")
     for speaker, data in speaker_dependent.items():
