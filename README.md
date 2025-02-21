@@ -112,6 +112,35 @@ time_format="%H:%M:%S.%f"
 
 speaker_independent, speaker_dependent, shared_expressions, self_repetitions, online_metrics = dialign(input_file, speaker_col, message_col, timestamp_col, valid_speakers, filters=filters, time_format=time_format)
 ```
+The outputs are
+```python
+speaker_independent = {'ER': 0.21140939597315436, 'SER': 0.2214765100671141, 'EE': 0.0738255033557047, 'Total tokens': 298, 'Num. shared expressions': 19, 'EV': 0.06375838926174497, 'ENTR': 0.40945861869508926, 'L': 1.1578947368421053, 'LMAX': 3}
+speaker_dependent = {'Emma': {'ER': 0.22807017543859648, 'EE': 0.03508771929824561, 'Total tokens': 114, 'Initiated': 0.5789473684210527, 'Established': 0.21052631578947367}
+                      'Student A': {'ER': 0.1388888888888889, 'EE': 0.09722222222222222, 'Total tokens': 72, 'Initiated': 0.2631578947368421, 'Established': 0.3684210526315789}
+                      'Student B': {'ER': 0.24107142857142858, 'EE': 0.09821428571428571, 'Total tokens': 112, 'Initiated': 0.15789473684210525, 'Established': 0.42105263157894735}}
+shared_expressions = [
+{'of': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 2, 'turns': [1, 2, 7, 9]},
+'we': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 2, 'turns': [1, 2, 0, 4, 5, 7, 9]},
+'i': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 2, 'turns': [1, 2, 0, 5, 7, 9]},
+'the': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 2, 'turns': [1, 2, 7, 0, 8]},
+'and': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 4, 'turns': [1, 4, 0, 8]},
+'to': {'initiator': 'Emma', 'establisher': 'Student B', 'establishmemt turn': 5, 'turns': [2, 5, 0, 6, 8, 9]},
+'so': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 6, 'turns': [1, 6, 7, 0, 8, 9]},
+'you': {'initiator': 'Emma', 'establisher': 'Student A', 'establishmemt turn': 6, 'turns': [5, 6, 7, 0, 8]},
+'what': {'initiator': 'Student B', 'establisher': 'Emma', 'establishmemt turn': 7, 'turns': [2, 7, 1, 9]},
+'it': {'initiator': 'Student B', 'establisher': 'Emma', 'establishmemt turn': 7, 'turns': [2, 7, 5, 1, 9]},
+'one': {'initiator': 'Student B', 'establisher': 'Emma', 'establishmemt turn': 7, 'turns': [4, 7, 6, 8, 1, 9]},
+'battery': {'initiator': 'Emma', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [6, 8, 7]},
+'time': {'initiator': 'Emma', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [6, 8]},
+'over': {'initiator': 'Emma', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [6, 8, 7]},
+"you \'re": {'initiator': 'Student A', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [7, 8]},
+'two': {'initiator': 'Student A', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [7, 8, 4, 9, 6]},
+'by': {'initiator': 'Student A', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [7, 8]},
+'two over three': {'initiator': 'Student A', 'establisher': 'Student B', 'establishmemt turn': 8, 'turns': [7, 8]},
+"'re": {'initiator': 'Student A', 'establisher': 'Emma', 'establishmemt turn': 9, 'turns': [8, 9]}}]
+
+```
+
 
 ### Online mode
 
