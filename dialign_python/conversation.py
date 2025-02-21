@@ -11,11 +11,11 @@ class Conversation:
 
         Args:
             history (tuple, optional): a tuple array of timestamps, speakers, and messages within the given window. Defaults to an emply list.
-            window (int | timedelta, optional): a number referring to the window size. Defaults to None.
+            window (int | timedelta, optional): a number of turns or a range of time to consider as the valid conversation history. Defaults to None.
             persons (dict, optional): a dictionary of all the speakers involved in  the conversation. Defaults to an empty dict.
             exception_tokens (list, optional): an array of strings not to include in calculation. Defaults to an empty list.
             min_ngram (int, optional): constraints on the length of n_grams to check for. Defaults to 1.
-            max_ngram (_type_, optional): constraints on the length of n_grams to check for. Defaults to None.
+            max_ngram (int, optional): constraints on the length of n_grams to check for. Defaults to None.
             time_format (str, optional): format of the timestamp. Defaults to "%Y-%m-%d %H:%M:%S".
         """
         if history is None:
@@ -50,6 +50,14 @@ class Conversation:
     def parallel_score(self, utterances, speaker, add_message_to_history):
         """
         parallel scoring to the external module.
+
+        Args:
+            utterances (list): list of utterances to score
+            speaker (str): speaker of the utterances
+            add_message_to_history (bool): whether to add the utterances to the conversation history
+        
+        Returns:
+            list: list of tuples containing the utterance and the dictionary of scores
         """
         try:
             results = score_utterances_in_parallel(self, utterances, speaker, add_message_to_history)
@@ -63,8 +71,9 @@ class Conversation:
         Add a message to the conversation history and adapt the persons dictionary if there is a new inclusion
 
         Args:
-            speaker (_type_): _description_
-            message (_type_): _description_
+            speaker (str): the speaker of the message
+            message (str): the utterance to be scored
+            timestamp (str, optional): the string representation of the timestamp of the message. Defaults to None.
         """
 
         if speaker not in self.persons:
@@ -91,15 +100,19 @@ class Conversation:
         Function for scoring a message in relation to the conversation.
 
         Args:
-            speaker (_type_): _description_
-            message (_type_): _description_
+            speaker (str): the speaker of the message
+            message (str): the utterance to be scored
+            timestamp (str, optional): the string representation of the timestamp of the message. Defaults to None.
             focus_conversation (_type_, optional): _description_. Defaults to None.
 
-        Raises:
-            NameError: _description_
-
         Returns:
-            _type_: _description_
+            tuple: A tuple containing the following elements:
+                - der (float): DER score
+                - dser (float): DSER score
+                - dee (float): DEE score
+                - established_expressions (list): List of established expressions
+                - repeated_expressions (list): List of self-repeated expressions
+                - personal_repetitions (list): List of personal repetitions
         """
         if speaker not in self.persons:
             self.persons[speaker] = Person(speaker)
@@ -132,22 +145,9 @@ class Conversation:
         return der, dser, dee, established_expressions, repeated_expressions, personal_repetitions
 
 
-    def score_sub_conversation(self, speaker, message, scoring_condition, focus_conversation=None):
-        """
-        Scoring for sub_conversation. Strips extra functionality not needed for a sub_conversation measurement.
-
-        Args:
-            speaker (_type_): _description_
-            message (_type_): _description_
-            scoring_condition (_type_): _description_
-            focus_conversation (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
+    def _score_sub_conversation(self, speaker, message, focus_conversation=None):
         if self.length == 0:
             return 0, 0, 0
-        
         
         print (f'This is the history {self.history}')
         self.analyze_conversation()
@@ -167,8 +167,8 @@ class Conversation:
 
         Args:
             focus_conversation (_type_): _description_
-            speaker (_type_): _description_
-            message (_type_): _description_
+            speaker (str): the speaker of the message
+            message (str): the utterance to be scored
 
         Returns:
             _type_: _description_
@@ -197,7 +197,7 @@ class Conversation:
             speaker, message = sub_history.pop()
         
         sub_conversation = Conversation(sub_history, self.window, speakers, self.exception_tokens, self.min_ngram, self.max_ngram)
-        a, b, c = sub_conversation.score_sub_conversation(speaker, message, 0)
+        a, b, c = sub_conversation._score_sub_conversation(speaker, message)
         del sub_conversation
         return a, b, c
 
@@ -207,16 +207,20 @@ class Conversation:
         incorporates the message into the conversation sequence and recalculates measurements
 
         Args:
-            current_speaker (_type_): _description_
-            message (_type_): _description_
+            current_speaker (str): the speaker of the message
+            message (str): the utterance to be scored
+            sub_window (list, optional): a windowed conversation history. Defaults to None.
 
         Returns:
-            _type_: _description_
+            tuple: A tuple containing the following elements:
+                - additions (list): List of newly established shared expressions
+                - individual_repetitions (list): List of self-repeated expressions
+                - expression_repetitions (list): List of repeated expressions
         """
 
         punctuations = ['.', ',', '!', '?']
 
-        n_gram_set = self.create_n_grams(message)
+        n_gram_set = self._create_n_grams(message)
 
         if sub_window is None:
             sub_window = self.history
@@ -230,14 +234,14 @@ class Conversation:
         for i, turn in enumerate(sub_window):
             timestamp, speaker, past_message = turn[0], turn[1], turn[2]
             if speaker == current_speaker:
-                matching_n_grams = self.compare(past_message, n_gram_set)
+                matching_n_grams = self._compare(past_message, n_gram_set)
                 repetitions = set(self.persons[current_speaker].repetitions)
                 for n_gram, free_form in matching_n_grams.items():
                     if n_gram not in repetitions and n_gram not in punctuations and free_form:
                         individual_repetitions.append(n_gram)
                         self.persons[current_speaker].add_repetition(n_gram)
             else:
-                matching_n_grams = self.compare(past_message, n_gram_set)
+                matching_n_grams = self._compare(past_message, n_gram_set)
                 for n_gram, free_form in matching_n_grams.items():
                     # Keep track of turns where shared expressions are used
                     if n_gram in self.shared_expressions:
@@ -273,11 +277,13 @@ class Conversation:
         Sets up the respective score calculations for DER and DSER
 
         Args:
-            speaker (_type_): _description_
-            message (_type_): _description_
+            speaker (str): the speaker of the message
+            message (str): the utterance to be scored
 
         Returns:
-            _type_: _description_
+            tuple: A tuple containing the following elements:
+                - der_score (float): DER score
+                - dser_score (float): DSER score
         """
         #message = ''.join([char for char in message if char.isalnum() or char.isspace()])
         
@@ -291,36 +297,34 @@ class Conversation:
         dser_score = self.calculate_dser(message, person)
 
         return der_score, dser_score
-    
 
     def calculate_dee(self, established_expressions, message):
         """
         Final Step of DEE calculation. Newly established shared expressions.
 
         Args:
-            established_expressions (_type_): _description_
-            message (_type_): _description_
+            established_expressions (list): a list of newly established shared expressions
+            message (str): the utterance to be scored
 
         Returns:
-            _type_: _description_
+            dee (float): DEE score
         """
         #message = ''.join([char for char in message if char.isalnum() or char.isspace()])
-        dee = self.fraction_measurement(message, established_expressions, count_once=True)
+        dee = self._fraction_measurement(message, established_expressions, count_once=True)
 
         return dee
-
 
     def calculate_der(self, message):
         """
         Calculate DER measurement final step, speaker shared established expression repetition
 
         Args:
-            word_set (_type_): _description_
+            message (str): the utterance to be scored
 
         Returns:
-            _type_: _description_
+            der (float): DER score
         """
-        der = self.fraction_measurement(message, list(self.shared_expressions.keys()))
+        der = self._fraction_measurement(message, list(self.shared_expressions.keys()))
 
         return der
     
@@ -329,29 +333,23 @@ class Conversation:
         Calculate DSER measurement final step, speaker personal repetition
 
         Args:
-            word_set (_type_): _description_
-            speaker (_type_): _description_
+            message (str): the utterance to be scored
+            speaker (str): the speaker of the message
 
         Returns:
-            _type_: _description_
+            dser (float): DSER score
         """
         used_tokens = speaker.show_repetitions()
-        dser = self.fraction_measurement(message, used_tokens)
+        dser = self._fraction_measurement(message, used_tokens)
 
         return dser
 
-    def fraction_measurement(self, message, used_tokens, count_once=False):
+    def _fraction_measurement(self, message, used_tokens, count_once=False):
         """
         Measures the amount of a word_set that is comprised of a set of tokens defined by used_tokens and 
         returns the percentage composition.
-
-        Args:
-            word_set (_type_): _description_
-            used_tokens (_type_): _description_
-
-        Returns:
-            _type_: _description_
         """
+        
         word_set = message.split()
         if len(word_set) == 0:
             return 0
@@ -378,19 +376,12 @@ class Conversation:
         fraction = count_ones/len(tracking_arr)
         return fraction
     
-    def compare(self, message, n_gram_set):
+    def _compare(self, message, n_gram_set):
         """
-        # compares a message with an n_gram set
-
-        Args:
-            message (_type_): _description_
-            n_gram_set (_type_): _description_
-
-        Returns:
-            _type_: _description_
+        Compares a message with an n_gram set
         """
         try:
-            past_n_grams = self.create_n_grams(message)
+            past_n_grams = self._create_n_grams(message)
             matching_n_grams = list(set([n_gram for n_gram in n_gram_set if n_gram in past_n_grams]))
             free_form = [True] * len(matching_n_grams)
             for i, n_gram in enumerate(matching_n_grams):
@@ -410,15 +401,9 @@ class Conversation:
             print ("Error in comparing current to past n-grams")
 
 
-    def create_n_grams(self, message):
+    def _create_n_grams(self, message):
         """
         Factor a string into a set of n_grams
-
-        Args:
-            message (_type_): _description_
-
-        Returns:
-            _type_: _description_
         """
         try:
             # message = message.lower()
@@ -453,11 +438,11 @@ class Conversation:
 
     def set_n_gram_length_characteristics(self, min_n=None, max_n=None):
         """
-        manipulate properties of n_gram for specific calibration
+        Manipulate properties of n_gram for specific calibration
 
         Args:
-            min_n (_type_, optional): _description_. Defaults to None.
-            max_n (_type_, optional): _description_. Defaults to None.
+            min_n (int, optional): constraints on the length of n_grams to check for. Defaults to None.
+            max_n (int, optional): constraints on the length of n_grams to check for. Defaults to None.
         """
 
         if min_n is not None and isinstance(min_n, int):
@@ -470,7 +455,7 @@ class Conversation:
         Sets a window size of past statements. Only statements in window size are measured. 
 
         Args:
-            window (int | timedelta): _description_
+            window (int | timedelta): a number of turns or a range of time to consider as the valid conversation history. Defaults to None.
         
         Returns: 
             windowed_content (list): a filtered view of the conversation history based on a count or time window.
