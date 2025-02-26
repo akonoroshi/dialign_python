@@ -1,6 +1,5 @@
 import time
 from datetime import datetime, timedelta
-from Parallel_score import score_utterances_in_parallel
 from person import Person
 import csv
 
@@ -56,20 +55,6 @@ class Conversation:
 
         self.lexicon_of_shared_expressions = {}
         self.suppress_debug = suppress_debug  # Debug suppression flag
-
-    def parallel_score(self, utterances, speaker, scoring_condition):
-        """
-        parallel scoring to the external module.
-        """
-        previous_debug_state = self.suppress_debug
-        # Suppress debug during parallel scoring
-        self.suppress_debug = True
-        try:
-            results = score_utterances_in_parallel(self, utterances, speaker, scoring_condition)
-        finally:
-            # Restore previous state
-            self.suppress_debug = previous_debug_state
-        return results
 
     def add_message(self, speaker, message):
         """
@@ -701,21 +686,6 @@ class Conversation:
             except ValueError:
                 print("Error including specific tokens.")
 
-        elif mode == 'p':
-            results = conversation.parallel_score(utterances_to_score, "BatchSpeaker", 0)
-            if results:
-                print("\nParallel Scoring Results:")
-                for utterance, scores in results:
-                    if scores and isinstance(scores, dict):
-                        der = scores.get("DER", "N/A")
-                        dser = scores.get("DSER", "N/A")
-                        dee = scores.get("DEE", "N/A")
-                        print(f"Utterance: {utterance}\nDER: {der}\nDSER: {dser}\nDEE: {dee}\n")
-                    else:
-                        print(f"Utterance: {utterance}\nScoring Failed.\n")
-            else:
-                print("No results from parallel scoring.")
-
 
 if __name__ == '__main__':
     utterances_to_score = [
@@ -730,12 +700,9 @@ if __name__ == '__main__':
     conversation.load_conversation_from_file(input_file)
     # conversation.set_n_gram_length_characteristics(3, 3)
     while True:
-        mode = input("Enter option (a, s, q, w, p) ")
+        mode = input("Enter option (a, s, q, w) ")
         if mode == 'q':
             break
-        elif mode == 'p':
-            speaker = "BatchSpeaker"
-            conversation.request('p', speaker)
         else:
             speaker = input("Enter speaker: ").strip().lower()
             message = input("Enter message: ").strip()
