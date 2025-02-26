@@ -450,8 +450,8 @@ class Conversation:
         """
         Sets a window size of past statements. Only statements in window size are measured. 
 
-        Args:
-            window (int | timedelta): a number of turns or a range of time to consider as the valid conversation history. Defaults to None.
+        Args: window (int | timedelta): a number of turns or a range of time to consider as the valid conversation
+        history. Defaults to None.
         
         Returns: 
             windowed_content (list): a filtered view of the conversation history based on a count or time window.
@@ -558,22 +558,26 @@ class Conversation:
         with open(self.output_file, 'a') as file:
             file.write(f"{timestamp}, $@#, {speaker}, {message}\n")
 
-    def request(self, mode, speaker=None, message=None, add_message_to_history=True, focus_conversation=None,
-                utterances_to_score=None):
+    def request(self, mode, speaker=None, message=None, add_message_to_history=True, focus_conversation=None):
         """
         Handle all requests to the overall program. @mode is used to 
 
-        Args: mode (char): specify the type of operation being done on the dialign. Mode a is adding which takes
+        Args:
+            mode (char): specify the type of operation being done on the dialign. Mode a is adding which takes
         speaker and the message and adds them. The score mode does a similar thing but if scoring condition is set to
         1 the message is added to conversation history. The mode n is used to set n_gram characteristics and in this
         case speaker and message are numbers (not strings as for add_message and score_message) that limit the N-gram
         creation. window size only takes one argument after its mode(w) which is a number refering to the amount of
         past conversations to take into account. e and i are used to excerpt and include specific words or exclude
-        them. These are entered in the form of a list of the strings to be excluded and included. speaker (str):
-        _description_ Defaults to None. message (_type_, optional): _description_. Defaults to None.
-        add_message_to_history (bool, optional): _description_. Defaults to True. focus_conversation (_type_,
-        optional): _description_. Defaults to None. utterances_to_score (list, optional): utterances to score.
-        Defaults to None.
+        them. These are entered in the form of a list of the strings to be excluded and included.
+
+            speaker (str): _description_ Defaults to None.
+
+            message (_type_, optional): _description_. Defaults to None.
+
+            add_message_to_history (bool, optional): _description_. Defaults to True.
+            
+            focus_conversation (_type_, optional): _description_. Defaults to None.
 
         * In the case of certain modes such as 'w', speaker and message may contain integer values. 
         """

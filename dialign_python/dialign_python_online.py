@@ -596,8 +596,7 @@ class Conversation:
         for person in self.persons.values():
             person.print_repetitions()
 
-    def request(self, mode, speaker, message=None, scoring_condition=0, focus_conversation=None,
-                uttrerance_to_score=None):
+    def request(self, mode, speaker, message=None, scoring_condition=0, focus_conversation=None):
         """
         this function handles all requests to the overall program. @mode is used to specify the type of operation
         being done on the dialign. Mode a is adding which takes speaker and the message and adds them. The score mode
@@ -609,11 +608,11 @@ class Conversation:
         strings to be excluded and included.
 
         Args:
-            mode (_type_): _description_
-            speaker (_type_): _description_
-            message (_type_, optional): _description_. Defaults to None.
-            scoring_condition (int, optional): _description_. Defaults to 0.
-            focus_conversation (_type_, optional): _description_. Defaults to None.
+            mode (_type_): Mode of the conversation.
+            speaker (_type_): Speaker of the utterance, if any. Will be None in n, w, e, and i modes.
+            message (_type_, optional): Utterance by the speaker.
+            scoring_condition (int, optional): Defaults to 0.
+            focus_conversation (_type_, optional): Defaults to None.
 
         * In the case of certain modes such as 'w', speaker and message may contain integer values. 
         """
