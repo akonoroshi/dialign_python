@@ -26,6 +26,7 @@ class Person:
             n_gram (_type_): _description_
         """
         self.repetitions.remove(n_gram)
+
     def show_repetitions(self):
         """
         Show all repetitions of Person
@@ -34,9 +35,9 @@ class Person:
             _type_: _description_
         """
         return self.repetitions
-    
+
     def print_repetitions(self):
-        print (f'{self.name}: {self.repetitions}')
+        print(f'{self.name}: {self.repetitions}')
 
     def get_name(self):
         """

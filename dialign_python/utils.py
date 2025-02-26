@@ -3,6 +3,7 @@ import spacy
 
 nlp = spacy.load("en_core_web_sm")
 
+
 def tokenize(text):
     """
     Tokenize the text using spacy.
