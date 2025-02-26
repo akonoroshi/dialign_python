@@ -698,7 +698,6 @@ if __name__ == '__main__':
     conversation = Conversation()
     input_file = "conversation_input.txt"
     conversation.load_conversation_from_file(input_file)
-    # conversation.set_n_gram_length_characteristics(3, 3)
     while True:
         mode = input("Enter option (a, s, q, w) ")
         if mode == 'q':
@@ -709,4 +708,3 @@ if __name__ == '__main__':
 
             conversation.request(mode, speaker, message, 1)
         conversation.show_conversation()
-        # conversation.conversation_information()

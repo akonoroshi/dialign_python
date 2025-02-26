@@ -289,7 +289,64 @@ online_metrics = [
 
 
 ### Online mode
+For online mode, you can start an infinite loop and then add or score utterances based on the menu options. Here is a sample code for online mode:
+```python
+from dialign_python.dialign_python_online import Conversation
 
+conversation = Conversation()
+while True:
+    mode = input("Enter option (a, s, q, w) ")
+    if mode == 'q':
+        break
+    else:
+        speaker = input("Enter speaker: ")
+        message = input("Enter message: ")
+        conversation.request(mode, speaker, message, 1)
+```
+* a: Add a new message from a speaker.
+* s: Add a new message from a speaker and score the utterance for DER and DSER.
+* q: Quit the online mode
+* w: Update the window size of the conversation context for DER and DSER calculations. 
+
+Here is a sample run of the above code:
+```
+Enter option (a, s, q, w) a
+Enter speaker: Emma
+Enter message: Hello human
+
+Conversation history:
+('2025-02-25 22:27:10', 'emma', 'Hello human')
+Enter option (a, s, q, w) a
+Enter speaker: Human
+Enter message: Hello Emma
+
+Conversation history:
+('2025-02-25 22:27:10', 'emma', 'Hello human')
+('2025-02-25 22:27:21', 'human', 'Hello Emma')
+Enter option (a, s, q, w) s
+Enter speaker: Emma
+Enter message: Hello again! How are you?
+{'Hello': ['emma', 2, 1]}
+Shared Expressions : ['Hello']
+{'Hello': ['emma', 3, 1]}
+DER: 0.2
+DSER: 0.2
+DEE: 0.0
+
+Conversation history:
+('2025-02-25 22:27:10', 'emma', 'Hello human')
+('2025-02-25 22:27:21', 'human', 'Hello Emma')
+('2025-02-25 22:27:38', 'emma', 'Hello again! How are you?')
+Enter option (a, s, q, w) q
+```
+The conversation output for online mode will be saved in a conversation_output.tsv file with timestamp, speaker, and the message as tab separated values.
+
+A sample conversation_output.tsv file looks like:
+```
+2025-02-25 22:27:10	emma	Hello human
+2025-02-25 22:27:21	human	Hello Emma
+2025-02-25 22:27:38	emma	Hello again! How are you?
+```
 
 ## References
 - Anonymous, Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot, under review at 26th International Conference on Artificial Intelligence in Education, 2025.
