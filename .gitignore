@@ -1,3 +1,4 @@
+*.idea
 *.pyc
 build/*
 dialign_python.egg-info/*

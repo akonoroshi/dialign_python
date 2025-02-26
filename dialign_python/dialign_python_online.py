@@ -3,13 +3,15 @@ from datetime import datetime, timedelta
 from Parallel_score import score_utterances_in_parallel
 from person import Person
 
+
 class Conversation:
-    def __init__(self, history=None, length=None, window=None, persons=None, exception_tokens=None, min_ngram=None, max_ngram=None, suppress_debug=False):
+    def __init__(self, history=None, length=None, window=None, persons=None, exception_tokens=None, min_ngram=None,
+                 max_ngram=None, suppress_debug=False):
         """
-        Initializes a conversation instance. History is a tuple array of all speakers and messages, length is the length
-        of history, window is a number referring to the window size, persons is a dictionary of all the speakers involved in 
-        the conversation, exception_tokens is an array of strings not to include in calculation, and min_ngram and max_ngram are constraints
-        on the length of n_grams to check for. 
+        Initializes a conversation instance. History is a tuple array of all speakers and messages, length is the
+        length of history, window is a number referring to the window size, persons is a dictionary of all the
+        speakers involved in the conversation, exception_tokens is an array of strings not to include in calculation,
+        and min_ngram and max_ngram are constraints on the length of n_grams to check for.
 
         Args:
             history (_type_, optional): _description_. Defaults to None.
@@ -30,14 +32,13 @@ class Conversation:
             self.max_ngram = max_ngram
             self.shared_expressions = []
 
-        else: 
-            self.history = []  
+        else:
+            self.history = []
             self.length = 0
             self.window = self.length
 
             # speakers
-            self.persons = {} 
-            
+            self.persons = {}
 
             # function words seem to be discarded by the tool as non-essential to tracking lexical alignment
             self.exception_tokens = []
@@ -66,7 +67,7 @@ class Conversation:
             results = score_utterances_in_parallel(self, utterances, speaker, scoring_condition)
         finally:
             # Restore previous state
-            self.suppress_debug = previous_debug_state 
+            self.suppress_debug = previous_debug_state
         return results
 
     def add_message(self, speaker, message):
@@ -87,9 +88,8 @@ class Conversation:
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         self.add_to_history(timestamp, speaker, message)
         self.save_conversation_message_to_file(timestamp, speaker, message)
-    
 
-    def score_message(self, speaker, message, scoring_condition, focus_conversation=None): 
+    def score_message(self, speaker, message, scoring_condition, focus_conversation=None):
         """
         Function for scoring a message in relation to the conversation.
 
@@ -110,28 +110,26 @@ class Conversation:
             speaker = speaker.lower()
             if self.length == 0:
                 return 0, 0, 0
-            
+
             if speaker not in self.persons:
                 self.persons[speaker] = Person(speaker)
 
             if focus_conversation != None:
                 for person in focus_conversation:
                     if person not in self.persons:
-                        return 0,0,0
+                        return 0, 0, 0
                 der, dser, dee = self.sub_conversation(focus_conversation, speaker, message)
                 if scoring_condition == 1:
                     self.add_message(speaker, message)
                 return der, dser, dee
             else:
                 if self.history:
-                
                     timestamp, last_speaker, last_message = self.history[-1]
                     # self.analyze_message(last_speaker, last_message)
                 self.analyze_conversation()
-                
 
                 established_expressions, personal_repetitions = self.analyze_message(speaker, message)
-                
+
                 dee = self.calculate_dee(established_expressions, message)
 
                 der, dser = self.create_scores(speaker, message)
@@ -139,10 +137,10 @@ class Conversation:
             if scoring_condition == 1:
                 self.add_message(speaker, message)
             else:
-                # removing shared expressions from array if the speaker and message are not to be added to conversastion history
+                # removing shared expressions from array if the speaker and message are not to be added to
+                # conversation history
                 for n_gram in established_expressions:
                     self.shared_expressions.remove(n_gram)
-
 
                 for n_gram in personal_repetitions:
                     self.persons[speaker].remove_repetition(n_gram)
@@ -152,7 +150,7 @@ class Conversation:
             print(f"Error in score_message: {e}")
         return 0, 0, 0
 
-    def score_sub_conversation(self, speaker, message, scoring_condition, focus_conversation=None): 
+    def score_sub_conversation(self, speaker, message, scoring_condition, focus_conversation=None):
         """
         Scoring for sub_conversation. Strips extra functionality not needed for a sub_conversation measurement.
 
@@ -167,9 +165,8 @@ class Conversation:
         """
         if self.length == 0:
             return 0, 0
-        
-        
-        print (f'This is the history {self.history}')
+
+        print(f'This is the history {self.history}')
         self.analyze_conversation()
 
         established_expressions, personal_repetitions = self.analyze_message(speaker, message)
@@ -179,7 +176,6 @@ class Conversation:
 
         return der, dser, dee
 
-    
     def sub_conversation(self, focus_conversation, new_speaker, new_message):
         """
         Creates a sub_conversation for measuring specific interactions between users in a larger conversation. 
@@ -193,8 +189,7 @@ class Conversation:
         Returns:
             _type_: _description_
         """
-        
-    
+
         reverse_history = self.history
         reverse_history.reverse()
         sub_history = []
@@ -208,21 +203,21 @@ class Conversation:
             # if count == self.window:
             #     break
         if count == 1:
-            return 0,0,0
+            return 0, 0, 0
 
         if new_speaker in focus_conversation:
             speaker = new_speaker
             message = new_message
         else:
             speaker, message = sub_history.pop()
-        
-        sub_conversation = Conversation(sub_history, count, self.window, speakers, self.exception_tokens, self.min_ngram, self.max_ngram)
+
+        sub_conversation = Conversation(sub_history, count, self.window, speakers, self.exception_tokens,
+                                        self.min_ngram, self.max_ngram)
         a, b, c = sub_conversation.score_sub_conversation(speaker, message, 0)
         del sub_conversation
         return a, b, c
 
-
-    def analyze_message(self, current_speaker, message, sub_window = None):
+    def analyze_message(self, current_speaker, message, sub_window=None):
         """
         incorporates the message into the conversation sequence and recalculates measurements
 
@@ -245,10 +240,9 @@ class Conversation:
 
         for i in self.lexicon_of_shared_expressions:
             self.lexicon_of_shared_expressions[i][2] = 0
-        
-        
+
         for timestamp, speaker, past_message in window_set:
-            if speaker == current_speaker: 
+            if speaker == current_speaker:
                 matching_n_grams = self.compare(past_message, n_gram_set)
                 repetitions = set(self.persons[current_speaker].repetitions)
                 for n_gram in matching_n_grams:
@@ -260,24 +254,20 @@ class Conversation:
                 # print (f'{speaker}: and {past_message}')
                 # print(f' Matching N_grams at this point are: {matching_n_grams}')
                 # print (f'S hared expressions at this point are: {self.shared_expressions}')
-            
+
                 for n_gram in matching_n_grams:
-                    
+
                     if n_gram not in self.shared_expressions:
-            
                         additions.append(n_gram)
-                        
+
                         # manage the lexicon of shared expressions
                         self.lexicon_of_shared_expressions[n_gram] = [speaker, 2, 1]
                     if self.lexicon_of_shared_expressions[n_gram][2] == 0:
                         self.lexicon_of_shared_expressions[n_gram][1] += 1
                         self.lexicon_of_shared_expressions[n_gram][2] = 1
 
-
         self.shared_expressions += additions
         return additions, individual_repetitions
-
-
 
     def add_to_history(self, timestamp, speaker, message):
         """
@@ -289,7 +279,6 @@ class Conversation:
         """
         self.history.append((timestamp, speaker, message))
         self.length += 1
-    
 
     def create_scores(self, speaker, message):
         """
@@ -307,9 +296,8 @@ class Conversation:
 
         # print (f'Word set: {word_set}')
 
-        
         if speaker in self.persons:
-            person = self.persons[speaker]  
+            person = self.persons[speaker]
             der_score = self.calculate_der(word_set)
         else:
             print(f"No such person: {speaker}")
@@ -318,7 +306,6 @@ class Conversation:
         dser_score = self.calculate_dser(word_set, person)
 
         return der_score, dser_score
-    
 
     def calculate_dee(self, established_expressions, message):
         """
@@ -337,7 +324,6 @@ class Conversation:
 
         return dee
 
-
     def calculate_der(self, word_set):
         """
         Calculate DER measurement final step,  speaker shared established expression repetition
@@ -351,7 +337,7 @@ class Conversation:
         der = self.fraction_measurement(word_set, self.shared_expressions)
 
         return der
-    
+
     def calculate_dser(self, word_set, speaker):
         """
         Calculate DSER measurement final step, speaker personal repetition
@@ -368,8 +354,6 @@ class Conversation:
 
         return dser
 
-
-
     def fraction_measurement(self, word_set, used_tokens):
         """
         Measures the amount of a word_set that is comprised of a set of tokens defined by used_tokens and 
@@ -382,18 +366,17 @@ class Conversation:
         Returns:
             _type_: _description_
         """
-        tracking_arr = [0] * len(word_set)  
-        
+        tracking_arr = [0] * len(word_set)
+
         for i in used_tokens:
 
+            words_in_i = i.split()
 
-            words_in_i = i.split()  
-            
-            if len(words_in_i) == 1:  
+            if len(words_in_i) == 1:
                 for count, word in enumerate(word_set):
-                    if words_in_i[0] == word: 
+                    if words_in_i[0] == word:
                         tracking_arr[count] = 1
-            
+
             elif len(words_in_i) > 1:
                 for count in range(len(word_set) - len(words_in_i) + 1):
                     match = True
@@ -407,13 +390,11 @@ class Conversation:
                             tracking_arr[count + offset] = 1
 
         count_ones = tracking_arr.count(1)
-        
-        fraction = count_ones/len(tracking_arr)
-        
+
+        fraction = count_ones / len(tracking_arr)
+
         return fraction
 
-
-    
     def compare(self, message, n_gram_set):
         """
         # compares a message with an n_gram set
@@ -429,9 +410,8 @@ class Conversation:
             past_n_grams = self.create_n_grams(message)
             matching_n_grams = [n_gram for n_gram in n_gram_set if n_gram in past_n_grams]
             return matching_n_grams
-        except: 
-            print ("Error in comparing current to past n-grams")
-
+        except:
+            print("Error in comparing current to past n-grams")
 
     def create_n_grams(self, message):
         """
@@ -445,12 +425,12 @@ class Conversation:
         """
         try:
             # message = message.lower()
-            message = ''.join([char for char in message if char.isalnum() or char.isspace()]) # strips punctuation
+            message = ''.join([char for char in message if char.isalnum() or char.isspace()])  # strips punctuation
             # message = message.replace('.', ' .')
             # message = message.replace(',', ' ,')
             words = message.split()
             n_grams = set()
-            
+
             # checking against max_ngram value to apply appropriate constraints
             if self.max_ngram == None:
                 maximum = len(words)
@@ -460,19 +440,17 @@ class Conversation:
             # Generate n-grams of size minimum to size maximum (those being variable defined in __init__
             for i in range(len(words)):
                 for n in range(self.min_ngram, maximum + 1):
-                    n_gram = ' '.join(words[i:i+n])
+                    n_gram = ' '.join(words[i:i + n])
                     n_grams.add(n_gram)
-            
+
             n_grams = list(n_grams)
-            #print (f'Length of n_grams = {len(n_grams)}')
-
-
+            # print (f'Length of n_grams = {len(n_grams)}')
 
             # for n in range(1, maximum + 1):
             #     for i in range(maximum - n + 1):
             #         n_gram = ' '.join(words[i:i+n])
             #         n_grams.append(n_gram)
-            
+
             # remove exception tokens
             n_grams_without_exceptions = []
             for h in n_grams:
@@ -480,9 +458,8 @@ class Conversation:
                     n_grams_without_exceptions.append(h)
 
             return n_grams_without_exceptions
-        except ValueError: 
-            print ("Invalid message argument provided to n_gram factoring")
-
+        except ValueError:
+            print("Invalid message argument provided to n_gram factoring")
 
     def load_conversation_from_file(self, input_file):
         """
@@ -499,7 +476,7 @@ class Conversation:
                         speaker, message = parts
                         self.add_message(speaker.strip(), message.strip())
         except FileNotFoundError:
-            print ("Invalid input file provided")
+            print("Invalid input file provided")
 
     def save_conversation_message_to_file(self, timestamp, speaker, message):
         """
@@ -548,11 +525,11 @@ class Conversation:
                 # Convert the timestamp string to a datetime object
                 message_time = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
                 time_difference = current_time - message_time
-                
+
                 # Append to windowed_content only if within the time window
                 if time_difference <= window:
                     windowed_content.append((timestamp, speaker, message))
-            
+
             if not windowed_content:
                 print(f"No messages found within the last {window.total_seconds()} seconds.")
             else:
@@ -568,7 +545,6 @@ class Conversation:
         # Return the filtered content without modifying the original history
         return windowed_content
 
-    
     def except_token(self, token):
         """
         function for excluding a token unnecesary to calculation
@@ -580,9 +556,8 @@ class Conversation:
             if isinstance(token, str):
                 self.exception_tokens.append(token)
         except ValueError:
-            print ("Invalid token argument provided")
-    
-    
+            print("Invalid token argument provided")
+
     def include_token(self, token):
         """
         function for incorporating a specific token on the exception list
@@ -594,19 +569,17 @@ class Conversation:
             if isinstance(token, str):
                 self.exception_tokens.remove(token)
         except ValueError:
-            print ("Invalid token argument provided")
+            print("Invalid token argument provided")
 
-    
     def show_conversation(self):
         """
         test function to see conversation history if necessary
         """
         print("\nConversation history:")
         for i in self.history:
-            print (i)
+            print(i)
         # for speaker, message in self.history:
         #     print(f"{speaker}: {message}")
-    
 
     def analyze_conversation(self):
         window_set = self.history[-self.window:]
@@ -627,21 +600,24 @@ class Conversation:
         print information about a conversation such as repetion amoung individual locutors as well as general shared expressions
         """
         print("")
-        print (f'Shared Expressions: {self.shared_expressions}')
+        print(f'Shared Expressions: {self.shared_expressions}')
 
         print("")
-        print ("Personal Repetitions amoung speakers")
+        print("Personal Repetitions amoung speakers")
         for person in self.persons.values():
             person.print_repetitions()
 
-
-    def request(self, mode,  speaker, message=None, scoring_condition=0, focus_conversation=None, uttrerance_to_score=None):
+    def request(self, mode, speaker, message=None, scoring_condition=0, focus_conversation=None,
+                uttrerance_to_score=None):
         """
-        this function handles all requests to the overall program. @mode is used to specify the type of operation being done on the dialign. Mode a is adding which takes 
-        speaker and the message and adds them. The score mode does a similar thing but if scoring condition is set to 1 the message is added to conversation history. The mode
-        n is used to set n_gram characteristics and in this case speaker and message are numbers (not strings as for add_message and score_message) that limit the N-gram creation.
-        window size only takes one argument after its mode(w) which is a number refering to the amount of past conversations to take into account. e and i are used to excerpt and 
-        include specific words or exclude them. These are entered in the form of a list of the strings to be excluded and included. 
+        this function handles all requests to the overall program. @mode is used to specify the type of operation
+        being done on the dialign. Mode a is adding which takes speaker and the message and adds them. The score mode
+        does a similar thing but if scoring condition is set to 1 the message is added to conversation history. The
+        mode n is used to set n_gram characteristics and in this case speaker and message are numbers (not strings as
+        for add_message and score_message) that limit the N-gram creation. window size only takes one argument after
+        its mode(w) which is a number refering to the amount of past conversations to take into account. e and i are
+        used to excerpt and include specific words or exclude them. These are entered in the form of a list of the
+        strings to be excluded and included.
 
         Args:
             mode (_type_): _description_
@@ -653,7 +629,7 @@ class Conversation:
         * In the case of certain modes such as 'w', speaker and message may contain integer values. 
         """
         # add
-        if mode == 'a':    
+        if mode == 'a':
             try:
                 self.add_message(speaker, message)
             except ValueError:
@@ -661,24 +637,24 @@ class Conversation:
         # score
         elif mode == 's':
             try:
-                #focus_conversation = ['bob', 'tim']
-                #print (f'Shared Expressions : {self.shared_expressions}')
+                # focus_conversation = ['bob', 'tim']
+                # print (f'Shared Expressions : {self.shared_expressions}')
                 if self.length == 0:
-                    return 0,0,0
-                
+                    return 0, 0, 0
+
                 if focus_conversation == None:
                     der, dser, dee = self.score_message(speaker, message, scoring_condition)
                 else:
                     der, dser, dee = self.score_message(speaker, message, scoring_condition, focus_conversation)
-                print (f'Shared Expressions : {self.shared_expressions}')
+                print(f'Shared Expressions : {self.shared_expressions}')
                 self.analyze_conversation()
-                print (f'DER: {der}')
-                print (f'DSER: {dser}')
-                print (f'DEE: {dee}')
+                print(f'DER: {der}')
+                print(f'DSER: {dser}')
+                print(f'DEE: {dee}')
                 return der, dser, dee
             except ValueError:
                 print("Error scoring message.")
-        #set n_gram characteristics
+        # set n_gram characteristics
         elif mode == 'n':
             try:
                 # in this case the speaker and message would be numbers which limit the window size
@@ -713,7 +689,7 @@ class Conversation:
             except ValueError:
                 print("Error excepting specific tokens")
         # include token
-        elif mode == 'i': 
+        elif mode == 'i':
             try:
                 # in this case the speaker parameter should be an array of values to inclusion
                 for token in speaker:
@@ -735,8 +711,8 @@ class Conversation:
                         print(f"Utterance: {utterance}\nScoring Failed.\n")
             else:
                 print("No results from parallel scoring.")
-            
-            
+
+
 if __name__ == '__main__':
     utterances_to_score = [
         "We can divide how much it cost to buy fifteen hot dog by fifteen.",
@@ -759,9 +735,7 @@ if __name__ == '__main__':
         else:
             speaker = input("Enter speaker: ").strip().lower()
             message = input("Enter message: ").strip
-        
+
             conversation.request(mode, speaker, message, 1)
         conversation.show_conversation()
-        #conversation.conversation_information()
-    
-
+        # conversation.conversation_information()
