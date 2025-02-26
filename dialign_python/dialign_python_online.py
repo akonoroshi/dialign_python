@@ -2,6 +2,7 @@ import time
 from datetime import datetime, timedelta
 from Parallel_score import score_utterances_in_parallel
 from person import Person
+import csv
 
 
 class Conversation:
@@ -51,7 +52,7 @@ class Conversation:
             self.shared_expressions = []
 
             # output file
-            self.output_file = "conversation_output.txt"
+            self.output_file = "conversation_output.tsv"
 
         self.lexicon_of_shared_expressions = {}
         self.suppress_debug = suppress_debug  # Debug suppression flag
@@ -487,7 +488,10 @@ class Conversation:
             message (_type_): _description_
         """
         with open(self.output_file, 'a') as file:
-            file.write(f"{timestamp}, $@#, {speaker}, {message}\n")
+            write_csv = csv.writer(file, delimiter='\t')
+            write_csv.writerow([timestamp, speaker, message])
+        # with open(self.output_file, 'a') as file:
+        #     file.write(f"{timestamp}, $@#, {speaker}, {message}\n")
 
     def set_n_gram_length_characteristics(self, min_n=None, max_n=None):
         """
@@ -734,7 +738,7 @@ if __name__ == '__main__':
             conversation.request('p', speaker)
         else:
             speaker = input("Enter speaker: ").strip().lower()
-            message = input("Enter message: ").strip
+            message = input("Enter message: ").strip()
 
             conversation.request(mode, speaker, message, 1)
         conversation.show_conversation()
