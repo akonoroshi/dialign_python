@@ -91,13 +91,13 @@ We explain the calculation of our measure using the table above. There are 15 sh
 
 ## Installation
 After cloning this repo, go to the top directory of the repo and run the following command:
-"`
+```
 python -m pip install .
-"`
+```
 If you do not have your own tokenizer (i.e., you want to use [our default tokenizer](https://github.com/akonoroshi/dialign_python/blob/47af424ee43ad580d01c2d1e5a28e3575954ac6b/dialign_python/utils.py#L6)), run the following command, too:
-"`
+```
 python -m spacy download en_core_web_sm
-"`
+```
 
 ## Usage
 There are two modes: offline and online. The offline mode is designed for the analysis of completed dialogues (in other words, you should have transcripts of finished dialogues). The online mode is designed for ongoing dialogues. The online mode can score new utterances using the dialogue history and update the history in real-time.
