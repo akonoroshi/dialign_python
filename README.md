@@ -1,6 +1,6 @@
 # dialign_python
 
-This repository has the multi-party version of [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021) implemented in Python. The extension to multi-party dialogues is under review at AIED 2025 (Anonymous, 2025).
+This repository has the multi-party version of [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021) implemented in Python. The extension to multi-party dialogues is acepted to AIED 2025 (Asano et al., 2025).
 
 ## Framework
 ![image](https://github.com/user-attachments/assets/54e9cf16-b8ec-4b7a-92d0-e22407e1a19d)
@@ -13,7 +13,7 @@ Duplessis et al. (2017) define the *initiator* of an expression as, "the interlo
 `dialign_python` offers self-repetitions, too (Dubuisson Duplessis et al., 2021). "Self-repetitions are lexical patterns appearing at least twice in the dialogue utterances of a given \[speaker\], independently of the other \[speakers'\] utterances."
 
 ### Metrics provided by `dialign_python`
-The following explanations are taken from [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021), Asano et al. (2022), and Anonymous (2025).
+The following explanations are taken from [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021), Asano et al. (2022), and Asano et al. (2025).
 `dialign_python` provides a set of measures to characterise both:
 1. the interactive verbal alignment process between dialogue participants, and
 2. the self-repetition behaviour of each participant.
@@ -349,7 +349,7 @@ A sample conversation_output.tsv file looks like:
 ```
 
 ## References
-- Anonymous, Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot, under review at 26th International Conference on Artificial Intelligence in Education, 2025.
+- Asano et al., Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot. In Proceedings of the 26th International Conference on Artificial Intelligence in Education, 2025.
 - Asano, Y.; Litman, D.; Yu, M.; Lobczowski, N.; Nokes-Malach, T.; Kovashka, A.; & Walker, E., Comparison of Lexical Alignment with a Teachable Robot in Human-Robot and Human-Human-Robot Interactions. In Proceedings of the 23rd Annual Meeting of the Special Interest Group on Discourse and Dialogue, 2022 pp. 615-622. https://aclanthology.org/2022.sigdial-1.57/
 - Dubuisson Duplessis, G.; Langlet, C.; Clavel, C.; Landragin, F., Towards alignment strategies in human-agent interactions based on measures of lexical repetitions, Lang Resources & Evaluation, 2021, 36p. https://dx.doi.org/10.1007/s10579-021-09532-w
 - Dubuisson Duplessis, G.; Clavel, C.; Landragin, F., Automatic Measures to Characterise Verbal Alignment in Human-Agent Interaction, 18th Annual Meeting of the Special Interest Group on Discourse and Dialogue (SIGDIAL), 2017, pp. 71--81. https://aclanthology.org/W17-5510/
