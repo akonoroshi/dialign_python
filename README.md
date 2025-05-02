@@ -2,6 +2,12 @@
 
 This repository has the multi-party version of [dialign](https://github.com/GuillaumeDD/dialign) (Dubuisson Duplessis et al., 2021) implemented in Python. The extension to multi-party dialogues is acepted to AIED 2025 (Asano et al., 2025).
 
+## Notice
+This software reimplements and extends [dialign](https://github.com/GuillaumeDD/dialign), which is distributed under the CeCILL-B license.
+This reimplementation was developed independently and includes additional features.
+
+The CeCILL-B license text is included in this repository as required.
+
 ## Framework
 ![image](https://github.com/user-attachments/assets/4fd2bca5-2859-4893-8d28-7c087e608ad8)
 
