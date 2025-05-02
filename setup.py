@@ -9,5 +9,5 @@ setup(
     install_requires = requirements,
     version='0.1.0',
     description='Python implementation of Dialign',
-    author='anonymous',
+    author='Yuya Asano, Paras Sharma, and Daniel Fritsch',
 )
