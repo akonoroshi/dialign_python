@@ -2,3 +2,4 @@ pandas
 numpy
 spacy
 scipy
+pytest
