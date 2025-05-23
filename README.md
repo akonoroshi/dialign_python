@@ -358,8 +358,18 @@ A sample conversation_output.tsv file looks like:
 2025-02-25 22:27:38	emma	Hello again! How are you?
 ```
 
+## Contributing to dialign_python
+We always welcome your contributions! Feel free to fork and make a pull request.
+
+## Citing dialign_python
+If you use this software or refer to this framework in the context of multi-party interactions (three or more speakers), cite both of the following:
+- Asano, Y; Litman, D.; Sharma, P.; Fritsch, D.; King-Shepard, Q.; Nokes-Malach, T.; Kovashka, A.; & Walker, E. Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot. In Proceedings of the 26th International Conference on Artificial Intelligence in Education, 2025.
+- Dubuisson Duplessis, G.; Langlet, C.; Clavel, C.; Landragin, F. Towards alignment strategies in human-agent interactions based on measures of lexical repetitions, Lang Resources & Evaluation, 2021, 36p. https://dx.doi.org/10.1007/s10579-021-09532-w
+
+If you just refer to the framework only in the context of one-on-one human-agent interactions, cite only the latter.
+
 ## References
-- Asano et al., Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot. In Proceedings of the 26th International Conference on Artificial Intelligence in Education, 2025.
-- Asano, Y.; Litman, D.; Yu, M.; Lobczowski, N.; Nokes-Malach, T.; Kovashka, A.; & Walker, E., Comparison of Lexical Alignment with a Teachable Robot in Human-Robot and Human-Human-Robot Interactions. In Proceedings of the 23rd Annual Meeting of the Special Interest Group on Discourse and Dialogue, 2022 pp. 615-622. https://aclanthology.org/2022.sigdial-1.57/
-- Dubuisson Duplessis, G.; Langlet, C.; Clavel, C.; Landragin, F., Towards alignment strategies in human-agent interactions based on measures of lexical repetitions, Lang Resources & Evaluation, 2021, 36p. https://dx.doi.org/10.1007/s10579-021-09532-w
-- Dubuisson Duplessis, G.; Clavel, C.; Landragin, F., Automatic Measures to Characterise Verbal Alignment in Human-Agent Interaction, 18th Annual Meeting of the Special Interest Group on Discourse and Dialogue (SIGDIAL), 2017, pp. 71--81. https://aclanthology.org/W17-5510/
+- Asano, Y; Litman, D.; Sharma, P.; Fritsch, D.; King-Shepard, Q.; Nokes-Malach, T.; Kovashka, A.; & Walker, E. Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot. In Proceedings of the 26th International Conference on Artificial Intelligence in Education, 2025.
+- Asano, Y.; Litman, D.; Yu, M.; Lobczowski, N.; Nokes-Malach, T.; Kovashka, A.; & Walker, E. Comparison of Lexical Alignment with a Teachable Robot in Human-Robot and Human-Human-Robot Interactions. In Proceedings of the 23rd Annual Meeting of the Special Interest Group on Discourse and Dialogue, 2022 pp. 615-622. https://aclanthology.org/2022.sigdial-1.57/
+- Dubuisson Duplessis, G.; Langlet, C.; Clavel, C.; Landragin, F. Towards alignment strategies in human-agent interactions based on measures of lexical repetitions, Lang Resources & Evaluation, 2021, 36p. https://dx.doi.org/10.1007/s10579-021-09532-w
+- Dubuisson Duplessis, G.; Clavel, C.; Landragin, F. Automatic Measures to Characterise Verbal Alignment in Human-Agent Interaction, 18th Annual Meeting of the Special Interest Group on Discourse and Dialogue (SIGDIAL), 2017, pp. 71--81. https://aclanthology.org/W17-5510/
