@@ -1,7 +1,7 @@
 import time
 import copy
 from datetime import datetime, timedelta
-from person import Person
+from dialign_python.person import Person
 
 
 class Conversation:

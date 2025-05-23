@@ -3,8 +3,8 @@ import pprint
 import pandas as pd
 import numpy as np
 from scipy.stats import entropy
-from person import Person
-from conversation import Conversation
+from dialign_python.person import Person
+from dialign_python.conversation import Conversation
 
 
 def read_transcript(input_file: str, speaker_col: str, message_col: str, sheet_name=None, valid_speakers=None,
@@ -86,7 +86,7 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
     """
 
     if tokenizer is None:
-        from utils import tokenize
+        from dialign_python.utils import tokenize
         tokenizer = tokenize
 
     df = read_transcript(input_file, speaker_col, message_col, sheet_name, valid_speakers, filters)
