@@ -368,6 +368,9 @@ If you use this software or refer to this framework in the context of multi-part
 
 If you just refer to the framework only in the context of one-on-one human-agent interactions, cite only the latter.
 
+## Acknowledgement
+This work was supported by Grant No. 2024645 from the National Science Foundation, Grant No. 220020483 from the James S. McDonnell Foundation, and a University of Pittsburgh Learning Research and Development Center award.
+
 ## References
 - Asano, Y; Litman, D.; Sharma, P.; Fritsch, D.; King-Shepard, Q.; Nokes-Malach, T.; Kovashka, A.; & Walker, E. Multi-party Lexical Alignment in Collaborative Learning with a Teachable Robot. In Proceedings of the 26th International Conference on Artificial Intelligence in Education, 2025.
 - Asano, Y.; Litman, D.; Yu, M.; Lobczowski, N.; Nokes-Malach, T.; Kovashka, A.; & Walker, E. Comparison of Lexical Alignment with a Teachable Robot in Human-Robot and Human-Human-Robot Interactions. In Proceedings of the 23rd Annual Meeting of the Special Interest Group on Discourse and Dialogue, 2022 pp. 615-622. https://aclanthology.org/2022.sigdial-1.57/
