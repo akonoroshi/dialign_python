@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-from person import Person
+from dialign_python.person import Person
 import csv
 
 
