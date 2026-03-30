@@ -1,4 +1,5 @@
 from collections import Counter
+from typing import List
 import pprint
 import pandas as pd
 import numpy as np
@@ -43,11 +44,11 @@ def read_transcript(input_file: str, speaker_col: str, message_col: str, sheet_n
     return df.dropna(subset=[speaker_col]).reset_index(drop=True)
 
 
-def _get_ev(expressions: list, total_tokens: int):
+def _get_ev(expressions: List[str], total_tokens: int) -> float:
     return len(expressions) / total_tokens
 
 
-def _get_entr(expressions: list):
+def _get_entr(expressions: List[str]) -> float:
     expression_lengths = [len(expression.split()) for expression in expressions]
     counter = Counter(expression_lengths)
     _, counts = zip(*counter.items())
@@ -103,9 +104,9 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
     self_repetition_num = 0
     establishment_num = 0
     total_tokens = 0
-    speaker_dependent = {speaker: {"ER": 0, "EE": 0, "Total tokens": 0, "Initiated": 0, "Established": 0} for speaker in
+    speaker_dependent = {speaker: {"ER": 0.0, "EE": 0.0, "Total tokens": 0, "Initiated": 0, "Established": 0} for speaker in
                          valid_speakers}
-    self_repetitions = {speaker: {"SER": 0} for speaker in valid_speakers}
+    self_repetitions = {speaker: {"SER": 0.0} for speaker in valid_speakers}
     online_metrics = []
     for _, row in df.iterrows():
         speaker = row[speaker_col]
@@ -153,15 +154,15 @@ def dialign(input_file: str, speaker_col: str, message_col: str, timestamp_col=N
         }
     else:
         speaker_independent = {
-            "ER": 0,
-            "SER": 0,
-            "EE": 0
+            "ER": 0.0,
+            "SER": 0.0,
+            "EE": 0.0
         }
     speaker_independent["Total tokens"] = total_tokens
     speaker_independent["Num. shared expressions"] = len(conversation.shared_expressions)
-    speaker_independent['EV'] = _get_ev(conversation.shared_expressions.keys(), total_tokens)
+    speaker_independent['EV'] = _get_ev(list(conversation.shared_expressions.keys()), total_tokens)
     expression_lengths = [len(expression.split()) for expression in conversation.shared_expressions]
-    speaker_independent['ENTR'] = _get_entr(conversation.shared_expressions.keys())
+    speaker_independent['ENTR'] = _get_entr(list(conversation.shared_expressions.keys()))
     speaker_independent['L'] = float(np.mean(expression_lengths))
     speaker_independent['LMAX'] = int(np.max(expression_lengths))
 

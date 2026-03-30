@@ -3,3 +3,4 @@
 build/*
 dialign_python.egg-info/*
 .DS_Store
+.vscode/*
